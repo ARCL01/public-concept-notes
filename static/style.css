@@ -278,9 +278,6 @@
   .h-1 {
     height: var(--spacing);
   }
-  .h-1\/2 {
-    height: calc(1 / 2 * 100%);
-  }
   .h-6 {
     height: calc(var(--spacing) * 6);
   }
@@ -292,6 +289,9 @@
   }
   .h-15 {
     height: calc(var(--spacing) * 15);
+  }
+  .h-16 {
+    height: calc(var(--spacing) * 16);
   }
   .h-20 {
     height: calc(var(--spacing) * 20);
@@ -349,6 +349,9 @@
   }
   .resize {
     resize: both;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
   }
   .grid-flow-col {
     grid-auto-flow: column;
@@ -460,6 +463,9 @@
   }
   .text-neutral-100 {
     color: var(--color-neutral-100);
+  }
+  .text-neutral-500 {
+    color: var(--color-neutral-500);
   }
   .text-neutral-600 {
     color: var(--color-neutral-600);

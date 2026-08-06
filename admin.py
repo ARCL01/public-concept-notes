@@ -2,6 +2,8 @@ from flask import Flask, request, g, abort, render_template
 import sqlite3
 import uuid
 import re
+import datetime
+import os
 
 app = Flask(__name__)
 
@@ -26,6 +28,20 @@ def init_db():
             db.cursor().executescript(f.read())
         db.commit()
 
+def clean_files():
+    with app.app_context():
+        cursor = get_db().cursor()
+
+        for row in cursor.execute('SELECT id FROM uploads'):
+            if not os.path.isfile(f'notes/{row[0]}.html'):
+                cursor.execute('DELETE FROM uploads WHERE id = ?',(row[0],))
+                get_db().commit()
+
+        for file in os.listdir('notes'):
+            result = cursor.execute('SELECT id FROM uploads WHERE id = ?',(file.replace('.html',''),)).fetchall()
+            if not len(result) > 0:
+                os.remove(f'notes/{file}')
+
 def create_site(svg:str,fileName:str,id:uuid.UUID):
 
     svg = re.sub(r'width=".*\sheight=".*pt"','id="notes" width="100%" height="100%"',svg)
@@ -42,6 +58,7 @@ def create_site(svg:str,fileName:str,id:uuid.UUID):
         finalF.write(templateContent)
 
 init_db()
+clean_files()
 
 @app.route("/admin")
 def show_home():
@@ -50,20 +67,34 @@ def show_home():
 @app.route("/admin/upload", methods=['GET','POST'])
 def show_note():
     if request.method == 'POST':
+        clean_files()
 
         f = request.files['upload']
         name = request.form['name']
         id = uuid.uuid4()
 
-        create_site(svg=f.stream.read().decode('utf-8'),fileName=name,id=id)
-
-        data = (
-            {"id": str(id), "name": name, "size": None}
-        )
-
         cursor = get_db().cursor()
-        cursor.execute("INSERT INTO uploads VALUES(:id, :name, :size)", data)
-        get_db().commit()
+        result = cursor.execute('SELECT id FROM uploads WHERE name = ?',(name,)).fetchone()
+
+        if len(result) == 1:
+            create_site(svg=f.stream.read().decode('utf-8'),fileName=name,id=result[0])
+
+            uploadDateTime = datetime.datetime.now().strftime('%d.%m.%Y %H:%M')
+
+            data = ({"datetime":uploadDateTime,"id":result[0]})
+
+            cursor.execute('UPDATE uploads SET uploadDateTime = :datetime WHERE id = :id',data)
+            get_db().commit()
+
+        else:
+            create_site(svg=f.stream.read().decode('utf-8'),fileName=name,id=id)
+
+            data = (
+                {"id": str(id), "name": name, "size": None, "uploadDateTime": datetime.datetime.now().strftime('%d.%m.%Y %H:%M')}
+            )
+
+            cursor.execute("INSERT INTO uploads VALUES(:id, :name, :size, :uploadDateTime)", data)
+            get_db().commit()
 
         return data
     else:
