@@ -7,11 +7,11 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN mkdir ./notes
 
 # Copy app and server
-COPY admin/admin.py admin/server.py ./
+COPY admin.py admin/server.py ./
 
 # Copy resources
-COPY shared/static ./static
-COPY shared/templates ./templates
-COPY admin/schema.sql ./
+COPY static ./static
+COPY templates ./templates
+COPY schema.sql ./
 
 CMD [ "python", "./server.py" ]

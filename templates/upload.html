@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <link rel="stylesheet" href="/static/style.css">
+    <title>Document</title>
+</head>
+    <body class="bg-[#121213] relative" style="
+background-image: radial-gradient(circle, #171717 2px, transparent 1.2px);
+background-size: 40px 40px;">
+        <form enctype="multipart/form-data" id="uploadForm" method="post" class="h-screen ps-4 pe-4 flex flex-col items-center justify-center pt-4">
+            <div class="w-full md:w-100 h-20 bg-neutral-900 rounded-md flex mb-4 p-4">
+                <input onkeyup="showUpload()" type="text" name="name" id="textField" class="w-full h-full p-4 bg-transparent text-neutral-100 rounded-md transition-colors ease-in-out duration-500 hover:bg-neutral-800 focus:bg-neutral-800 focus:outline-none placeholder:text-neutral-700" placeholder="Enter note name">
+            </div>
+            <label id="uploadWindow" for="dropzone" class="hidden w-full md:w-100 h-60 bg-neutral-900 rounded-md flex p-2 transition-colors ease-in-out duration-500 hover:bg-neutral-800 justify-center">
+                <div class="h-full flex flex-col justify-center items-center">
+                    <div class="grow-0 pb-4">
+                        <svg class="h-6 w-6 text-neutral-100 flex-1 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                        </svg>
+                    </div>
+                    <p class="text-neutral-100">Click to select file to upload</p>
+                    <p class="text-neutral-700 text-sm mt-2">.svg and .pdf files are allowed</p>
+                </div>
+                <input id="dropzone" class="hidden" type="file" accept=".svg, .pdf" name="upload">
+            </label>
+        </form>
+    <script>
+        document.getElementById("dropzone").onchange = function() {
+            document.getElementById("uploadForm").submit();
+        };
+
+        function showUpload()
+        {
+            const field = document.getElementById('textField')
+            const upload = document.getElementById('uploadWindow')
+
+            if (field.value != '')
+            {
+                document.startViewTransition(() => {
+                    upload.classList.remove('hidden');
+                });
+            }
+            else
+            {
+                document.startViewTransition(() => {
+                    upload.classList.add('hidden');
+                });
+            }
+
+        }
+    </script>
+    </body>
+</html>

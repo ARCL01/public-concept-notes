@@ -6,9 +6,9 @@ COPY ../requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy app and server
-COPY public/public.py public/server.py ./
+COPY public.py public/server.py ./
 
-COPY shared/static ./static
-COPY shared/templates ./templates
+COPY static ./static
+COPY templates ./templates
 
 CMD [ "python", "./server.py" ]

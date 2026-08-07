@@ -4,8 +4,8 @@ services:
       context: .
       dockerfile: admin/Dockerfile
     volumes:
-      - ./shared/app.db:/usr/src/app/app.db
-      - ./shared/notes/:/usr/src/app/notes
+      - ./app.db:/usr/src/app/app.db
+      - ./notes/:/usr/src/app/notes
     environment:
       - TZ=Europe/Prague
   public:
@@ -13,8 +13,8 @@ services:
       context: .
       dockerfile: public/Dockerfile
     volumes:
-      - ./shared/app.db:/usr/src/app/app.db
-      - ./shared/notes/:/usr/src/app/notes
+      - ./app.db:/usr/src/app/app.db
+      - ./notes/:/usr/src/app/notes
     depends_on:
       admin:
         condition: service_started

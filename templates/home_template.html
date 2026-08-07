@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/static/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/static/favicon-16x16.png">
+    <title>Home</title>
+</head>
+    <body class="bg-[#121213] relative" style="
+background-image: radial-gradient(circle, #171717 2px, transparent 1.2px);
+background-size: 40px 40px;">
+        <div id="searchWindow" class="h-screen ps-4 pe-4 flex flex-col items-center justify-center pt-4">
+            <div class="w-full md:w-100 h-15 bg-neutral-900 rounded-md flex p-2 mb-4">
+                <input id="searchInput" onkeyup="searchItems()" onfocus="moveBar()" onfocusout="timer = setInterval(resetBar, 100);" class="w-full ps-4 me-2 h-full bg-transparent text-sm text-neutral-100 rounded-md transition-colors ease-in-out duration-500 hover:bg-neutral-800 focus:bg-neutral-800 focus:outline-none " type="text" placeholder="Search for note" >
+                <button class="w-15 bg-neutral-900 flex flex-col items-center ease-in-out transition-colors duration-500 hover:bg-neutral-800 rounded-md">
+                    <svg class="h-6 w-6 text-neutral-100 flex-1 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                    </svg>
+                </button>
+            </div>
+            <div id="results" class="hidden w-full h-fit md:w-100 grid grid-cols-1 gap-4 text-neutral-100 overflow-scroll scrollbar-none transition-transform duration-300 ease-in-out">
+                {% for item in listItems %}
+                    <a onclick="clearInterval(timer);" href="/note/{{item.noteId}}" class="h-20 bg-neutral-900 transition-colors duration-500 ease-in-out hover:bg-neutral-800 flex items-center rounded-md text-left">
+                        <div class="grow">
+                            <div class="flex gap-2 h-8 items-center">
+                                <span class="ps-4 leading-none flex items-center h-full text-lg">{{item.noteName}}</span>
+                                <span class="leading-none h-fit align-middle text-xs flex items-center {{ 'bg-indigo-700' if item.fileType == 'SVG' else 'bg-emerald-700' }} rounded-md ps-1 pe-1 pb-0.5 pt-0.5">{{item.fileType}}</span>
+                            </div>
+                            <div class="ps-4 text-sm text-neutral-500">{{item.uploadDateTime}}</div>
+                        </div>
+                        <div class="w-10">
+                            <svg class="h-6 w-6 text-neutral-100 flex-1 pointer-events-none" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 0 0 3 8.25v10.5A2.25 2.25 0 0 0 5.25 21h10.5A2.25 2.25 0 0 0 18 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" />
+                            </svg>
+                        </div>
+                    </a>
+                {% else %}
+                    <a class="h-14 bg-neutral-900 transition-colors flex items-center rounded-md text-left">
+                        <div class="grow ps-4">No data found</div>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    <script>
+        let timer;
+
+        function openMenu(event) {
+            const button = event.target;
+            const content = button.nextElementSibling;
+            const parent = button.parentElement;
+            content.classList.toggle('hidden');
+            content.classList.toggle('grid');
+            content.classList.toggle('portrait:flex');
+            content.classList.toggle('portrait:flex-col');
+            content.classList.toggle('lg:flex');
+            content.classList.toggle('lg:flex-col');
+        }
+
+        function resetBar()
+        {
+            if (document.activeElement.id != 'searchInput')
+            {
+                document.startViewTransition(() => {
+                    document.getElementById('searchWindow').classList.add('justify-center');
+                    document.getElementById('results').classList.add('hidden');
+                });
+                clearInterval(timer);
+            }
+        }
+
+        function moveBar()
+        {
+            document.startViewTransition(() => {
+                document.getElementById('searchWindow').classList.remove('justify-center');
+                document.getElementById('results').classList.remove('hidden');
+            });
+        }
+
+
+        function searchItems() {
+
+            var input, filter, ul, li, a, i, txtValue;
+            input = document.getElementById('searchInput');
+            filter = input.value.toUpperCase();
+            ul = document.getElementById("results");
+            li = ul.getElementsByTagName('a');
+
+            for (i = 0; i < li.length; i++) {
+                a = li[i].getElementsByTagName("div")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                li[i].classList.remove('hidden');
+                } else {
+                li[i].classList.add('hidden');
+                }
+            }
+        }
+    </script>
+
+    </body>
+</html>
