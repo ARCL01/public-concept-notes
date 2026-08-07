@@ -1,7 +1,7 @@
-import io
+import os
 from pathlib import Path
 import sqlite3
-from flask import Flask, g, abort, render_template, send_file
+from flask import Flask, g, abort, render_template, send_from_directory
 from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
@@ -72,27 +72,14 @@ def download_note(noteId=None):
         return abort(404)
 
     file_path = get_safe_note_path(noteId)
-    if file_path is None:
-        return abort(400)
-
-    try:
-        with open(file_path, mode='r', encoding='utf-8') as f:
-            content = f.read().replace('visible', 'hidden')
-    except FileNotFoundError:
+    if file_path is None or not os.path.exists(file_path):
         return abort(404)
 
     download_name = secure_filename(f"{result[0]}.html")
     if not download_name:
         download_name = "note.html"
 
-    buffer = io.BytesIO(content.encode('utf-8'))
-
-    return send_file(
-        buffer,
-        as_attachment=True,
-        mimetype='text/html',
-        download_name=download_name
-    )
+    return send_from_directory('notes',f'{noteId}.html',download_name=download_name,as_attachment=True)
 
 @app.errorhandler(404)
 def page_not_found(error):
